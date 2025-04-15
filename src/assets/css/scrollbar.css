@@ -1,0 +1,19 @@
+* {
+    scrollbar-width: auto;
+    scrollbar-color: rgb(134, 134, 164) rgba(38, 0, 255, 0);
+  }
+  
+  /* Works on Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 14px;
+  }
+  
+  *::-webkit-scrollbar-track {
+    background: rgba(38, 0, 255, 0);
+  }
+  
+  *::-webkit-scrollbar-thumb {
+    background-color: rgb(134, 134, 164);
+    border-radius: 20px;
+    border: 3px solid rgba(38, 0, 255, 0);
+  }
