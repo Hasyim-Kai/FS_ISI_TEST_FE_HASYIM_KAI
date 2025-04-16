@@ -1,3 +1,4 @@
+import { AppProvider } from '@/store/provider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -18,10 +19,12 @@ function App() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  return <QueryClientProvider client={queryClient}>
-    <Toaster />
-    <Outlet />
-  </QueryClientProvider>
+  return <AppProvider>
+    <QueryClientProvider client={queryClient}>
+      <Toaster />
+      <Outlet />
+    </QueryClientProvider>
+  </AppProvider>
 }
 
 export default App;

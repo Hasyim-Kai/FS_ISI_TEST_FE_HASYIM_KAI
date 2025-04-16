@@ -124,11 +124,11 @@ export default function useVM() {
         todoData, isTodoLoading, isTodoFetching, todoError,
 
         isCreatePending, onSubmit,
-        createErr: (createErr as any)?.response?.data?.message,
+        createErr: (createErr as any)?.response?.data?.detail,
         isUpdatePending, onUpdate, onSelectTodoToUpdate, onCompleteTodo, onUncheckTodo, onCancelUpdate,
-        updateErr: (updateErr as any)?.response?.data?.message,
+        updateErr: (updateErr as any)?.response?.data?.detail,
         isDeletePending, onDel,
-        deleteErr: (deleteErr as any)?.response?.data?.message,
+        deleteErr: (deleteErr as any)?.response?.data?.detail,
 
     }
 }
