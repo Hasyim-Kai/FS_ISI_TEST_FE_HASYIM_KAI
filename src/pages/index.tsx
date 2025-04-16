@@ -1,27 +1,14 @@
 import TodoList from '@/components/feature/todo/list';
 import { Button } from '@/components/input/button';
 import FetchingLoading from '@/components/Loader/fetching-loading';
+import { IToast } from '@/utils/helper/toast';
+import useVM from './_useVM';
 import Loading from '@/components/Loader/loading';
-import { IToast, IToastSuccess } from '@/utils/helper/toast';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 
 type Props = {}
 
 export default function index({ }: Props) {
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
-
-    const onSubmit = (data: any) => {
-        IToastSuccess(`Task Added Successfully`, `Task has been added successfully!`);
-        reset(); // Reset the form after submission
-    };
-
-    useEffect(() => {
-
-    });
-
-    const isLoading = false
-    const isFetching = true
+    const model = useVM()
 
     const updateTodo = (id: number) => {
         IToast(`Task ${id}`);
@@ -36,37 +23,11 @@ export default function index({ }: Props) {
         IToast(`Task ${id}`);
     }
 
-    const todoListData = [
-        {
-            id: 1,
-            title: 'Task 1',
-            dueDate: '2023-10-10',
-            isCompleted: false,
-        },
-        {
-            id: 2,
-            title: 'Task 2',
-            dueDate: '2023-10-12',
-            isCompleted: true,
-        },
-        {
-            id: 3,
-            title: 'Task 3',
-            dueDate: '2023-10-15',
-            isCompleted: false,
-        },
-        {
-            id: 4,
-            title: 'Task 4',
-            dueDate: '2023-10-20',
-            isCompleted: true,
-        }
-    ]
-
     return <main className="relative mt-10 px-5 lg:px-0 flex min-h-screen max-w-4xl mx-auto flex-col items-center">
         <h1 className="text-5xl text-center">Task Management</h1>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-150 mt-5">
+        <form onSubmit={model.handleSubmit(model.isEditing ? model.onUpdate : model.onSubmit)}
+            className="w-full max-w-150 mt-5">
             <div className="flex flex-col items-center">
                 <div className='w-full'>
                     <label htmlFor="todoTitle" className='block'>Title</label>
@@ -75,39 +36,52 @@ export default function index({ }: Props) {
                         type="text"
                         placeholder="Enter a task"
                         className="p-2 border rounded-md w-full border-gray-500"
-                        {...register('todo', { required: 'This field is required' })}
+                        {...model.register('task', { required: 'This field is required' })}
                     />
-                    {errors.todo && <span className="text-red-500 text-sm mt-2">{String(errors.todo.message)}</span>}
+                    {model.errors.task && <span className="text-red-500 text-sm mt-2">{String(model.errors.task.message)}</span>}
                 </div>
 
                 <div className='flex items-center justify-center gap-3 mt-5'>
-                    <Button
-                        type="submit" disabled={isLoading}
-                        className="text-gray-700 bg-[#6FCBFF] hover:bg-[#4bbdff] ">
-                        Add Task
-                    </Button>
+                    {model.isEditing ? <>
+                        <Button
+                            type="submit" disabled={model.isTodoLoading || model.isUpdatePending}
+                            className="text-gray-700 bg-[#FFB46F] hover:bg-[#ffac5e] items-center gap-3">
+                            Update Task
+                            {(model.isTodoLoading || model.isUpdatePending) && <Loading isSmall className="" />}
+                        </Button>
 
-                    <Button
-                        type="submit" disabled={isLoading}
-                        className="text-gray-700 bg-[#FFB46F] hover:bg-[#ffac5e] ">
-                        Update Task
-                    </Button>
-
-                    <Button
-                        type="button" disabled={isLoading}
-                        className="text-gray-700 bg-[#FF6F6F] hover:bg-[#ff6060] ">
-                        Cancel
-                    </Button>
+                        <Button onClick={model.onCancelUpdate}
+                            type="button" disabled={model.isTodoLoading || model.isUpdatePending}
+                            className="text-gray-700 bg-[#FF6F6F] hover:bg-[#ff6060] items-center gap-3">
+                            Cancel
+                            {(model.isTodoLoading || model.isUpdatePending) && <Loading isSmall className="" />}
+                        </Button>
+                    </>
+                        : <Button
+                            type="submit" disabled={model.isCreatePending}
+                            className="text-gray-700 bg-[#6FCBFF] hover:bg-[#4bbdff] items-center gap-3">
+                            Add Task
+                            {model.isCreatePending && <Loading isSmall className="" />}
+                        </Button>}
                 </div>
+
+                {(model.createErr || model.updateErr) &&
+                    <div className='p-5 rounded-md bg-red-100 border border-red-400 mt-5'>
+                        <h1 className='text-center text-red-500'>Something went wrong!</h1>
+                    </div>}
             </div>
         </form>
 
-        <TodoList todoList={todoListData}
-            updateFn={updateTodo}
-            completeFn={completeTodo}
-            deleteFn={deleteTodo}
-            uncheckFn={uncheckTodo} />
+        <TodoList todoList={model.todoListData}
+            isLoading={model.isTodoListLoading || model.isTodoListFetching || model.isDeletePending}
+            isError={model.todoListError}
+            updateFn={model.onSelectTodoToUpdate}
+            completeFn={model.onCompleteTodo}
+            uncheckFn={model.onUncheckTodo}
+            deleteFn={model.onDel}
+        />
 
-        {isFetching && <FetchingLoading />}
+        {(model.isTodoFetching
+            || model.isUpdatePending) && <FetchingLoading />}
     </main>
 }
