@@ -25,13 +25,13 @@ export function IToastDesc(title: string = `🦄 Wow so easy!`, desc?: string) {
 }
 
 export function IToastLoading(title: string = `🦄 Wow so easy!`, desc?: string) {
-    toast(<div className="flex gap-3 items-center w-full">
+    toast(<div className="flex gap-3 items-center justify-between w-full">
         <Loading isSmall className="w-fit" />
         <div className="w-full">
             <h1 className="font-semibold">{title}</h1>
             {desc && <p className="text-xs text-slate-400">{desc}</p>}
         </div>
-        <Button size={`icon`} className="h-7 w-11"><X size={16} /></Button>
+        {/* <Button size={`icon`} variant={`ghost`} className="h-7 w-11"><X size={16} /></Button> */}
     </div>);
 }
 
