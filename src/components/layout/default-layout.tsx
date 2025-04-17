@@ -28,7 +28,8 @@ const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
   }, [data])
 
   useEffect(() => {
-    if (error) {
+    // if user is not guest and got some error, remove local storage and redirect to signin page
+    if (!state.user.isGuest && error) {
       localStorage.removeItem(`${appConfig.localStorageName}`)
       navigate("/auth/signin")
     }
