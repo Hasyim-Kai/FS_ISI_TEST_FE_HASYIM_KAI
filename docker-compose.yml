@@ -1,0 +1,46 @@
+services:
+
+  db:
+    container_name: postgres-15
+    image: postgres:15
+    environment:
+      POSTGRES_DB: todo_db_python
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    container_name: be_django
+    image: be-backend
+    # build: .
+    # volumes:
+    #   - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=todo_db_python
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      - db
+  
+  frontend:
+    build: .
+    container_name: react-frontend
+    volumes:
+      - .:/app
+      - /app/node_modules  # Use anonymous volume so container gets clean node_modules
+    ports:
+      - "4173:4173"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
