@@ -14,7 +14,7 @@ const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
   const queryClient = useQueryClient();
   const userRepo = new AuthApiRepository();
 
-  const { data, isSuccess, isLoading } = useQuery({
+  const { data, isSuccess, isLoading, error } = useQuery({
     queryKey: [QueryKey.userDetail],
     queryFn: () => userRepo.getme(),
     retry: false,
@@ -26,6 +26,13 @@ const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
       dispatch({ type: "SET_USER", payload: { user_id: data.user_id, username: data.username, email: data.email, isGuest: false } })
     }
   }, [data])
+
+  useEffect(() => {
+    if (error) {
+      localStorage.removeItem(`${appConfig.localStorageName}`)
+      navigate("/auth/signin")
+    }
+  }, [, error])
 
   const onLogout = () => {
     localStorage.removeItem(`${appConfig.localStorageName}`)
